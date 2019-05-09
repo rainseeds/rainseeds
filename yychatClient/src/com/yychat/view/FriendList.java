@@ -47,7 +47,6 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		//创建第一张卡片
 		myFriendPanel = new JPanel(new BorderLayout());//布局的问题,边界布局
 		//System.out.println(myFriendPanel.getLayout());
-		//表示为输出布局模式  layout布局
 		
 		//北部
 		myFriendButton=new JButton("我的好友");
@@ -56,14 +55,15 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		//中部
 		myFriendListJPanel=new JPanel(new GridLayout(MYFRIENDCOUNT-1,1));//网格布局
 		for(int i=1;i<MYFRIENDCOUNT;i++){
-			//激活自己的图标
 			myFriendJLabel[i]=new JLabel(i+"",new ImageIcon("images/duck.gif"),JLabel.LEFT);
 			myFriendJLabel[i].setEnabled(false);
-			if(Integer.parseInt(userName)==i) myFriendJLabel[i].setEnabled(true);
-			//myFriendJLabel[Integer.parseInt(userName)].setEnabled(true);
+			//激活自己的图标
+			//if(Integer.parseInt(userName)==i) myFriendJLabel[i].setEnabled(true);			
 			myFriendJLabel[i].addMouseListener(this);
 			myFriendListJPanel.add(myFriendJLabel[i]);
 		}
+		//激活自己的图标
+		//myFriendJLabel[Integer.parseInt(userName)].setEnabled(true);
 		/*myFriendListJScrollPane=new JScrollPane();
 		myFriendListJScrollPane.add(myFriendListJPanel);*/
 		myFriendListJScrollPane=new JScrollPane(myFriendListJPanel);
@@ -106,24 +106,26 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		this.setTitle(userName+"的好友列表");
 		this.setIconImage(new ImageIcon("images/duck2.gif").getImage());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setLocationRelativeTo(null);//设位置为与其他窗口无关（默认显示为在屏幕中央）
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 	
 	public static void main(String[] args) {
 		//FriendList friendList=new FriendList("pdh");
 	}
-
-	public void setEnabledOnlineFriend(String OnlineFriend) {
-	
-		//激活在线好友图标
-		String[] friendName=OnlineFriend.split(" ");
-		int count=friendName.length;
-		for(int i=0;i<count;i++){
-			myFriendJLabel[Integer.parseInt(friendName[i])].setEnabled(true);
-		    //myFriendJLabel[?].setEnabled(true);
-		}
+	public void setEnabledNewOnlineFriend(String newOnlineFriend){
+		myFriendJLabel[Integer.parseInt(newOnlineFriend)].setEnabled(true);
 	}
+
+	public void setEnabledOnlineFriend(String onlineFriend){
+		//激活在线好友图标
+		String[] friendName=onlineFriend.split(" ");
+		int count=friendName.length;
+		for(int i=0;i<count;i++){			
+			myFriendJLabel[Integer.parseInt(friendName[i])].setEnabled(true);
+		}		
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {//响应事件的方法
 		if(e.getSource()==myStrangerButton) cardLayout.show(this.getContentPane(), "2");

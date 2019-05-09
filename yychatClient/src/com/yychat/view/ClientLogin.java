@@ -16,8 +16,8 @@ import com.yychat.model.Message;
 import com.yychat.model.User;
 //1、在类中实现动作监听器接口
 public class ClientLogin extends JFrame implements ActionListener{//类名：ClientLogin,继承
-	public static HashMap hmFriendList=new HashMap<String,FriendList>();//创建保存FriendList对象的数据HashMap
-	// JFrame带有标题和边框的顶层窗口
+	public static HashMap hmFriendList=new HashMap<String,FriendList>();//创建保存FriendList对像的HashMap
+	
 	//北部的组件
 	JLabel jlbl1;
 	
@@ -32,13 +32,12 @@ public class ClientLogin extends JFrame implements ActionListener{//类名：Client
 	
 	//定义南部的组件
 	JButton jb1,jb2,jb3;
-	JPanel jp1;//创建面板
+	JPanel jp1;
 	
 	public  ClientLogin(){//构造方法，初始化对象
 		//创建北部组件
 		jlbl1=new JLabel(new ImageIcon("images/tou.gif"));//标签对象
-		this.add(jlbl1,"North");//this表示对象本身，就是JFrame
-		//this定义在JFrame里面，add将文件标签jlbl1添加到上面
+		this.add(jlbl1,"North");//this表示对象本身
 		
 		//创建中部组件
 		jtp1=new JTabbedPane();
@@ -68,7 +67,7 @@ public class ClientLogin extends JFrame implements ActionListener{//类名：Client
 		jp1.add(jb1);jp1.add(jb2);jp1.add(jb3);
 		this.add(jp1,"South");
 		
-		this.setSize(350,240);//设定大小
+		this.setSize(350,240);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//用途？
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);	
@@ -90,29 +89,34 @@ public class ClientLogin extends JFrame implements ActionListener{//类名：Client
 			//密码验证，密码是123456验证成功，否则验证失败
 			Message mess=new ClientConnetion().loginValidate(user);
 			if(mess.getMessageType().equals(Message.message_LoginSuccess)){
-				FriendList friendList=new FriendList(userName);//创建好友列表对象后
-				//保存FriendList对象
+				FriendList friendList=new FriendList(userName);//创建好友列表对象之后
+				//保存friendList
 				hmFriendList.put(userName, friendList);
+				
 				//第1步
 				//发送message_RequestOnlineFriend信息给服务器
-			   Message mess1=new Message();
-			   mess1.setSender(userName);
-			   mess1.setReceiver("Server");
-			   //设置信息类型，请求获得那些好友列表在线
-			   mess1.setMessageType(Message.message_RequestOnlineFriend);
-			   Socket s=(Socket)ClientConnetion.hmSocket.get(userName);
-			   ObjectOutputStream oos;
-			   try{
-				   oos=new ObjectOutputStream(s.getOutputStream());
-				   oos.writeObject(mess1);
-			   }catch(IOException e){
-				   e.printStackTrace();
-			   }
+				Message mess1=new Message();
+				mess1.setSender(userName);
+				mess1.setReceiver("Server");
+				//设置信息类型，请求获得哪些好友在线
+				mess1.setMessageType(Message.message_RequestOnlineFriend);
+				Socket s=(Socket)ClientConnetion.hmSocket.get(userName);
+				ObjectOutputStream oos;
+				try {
+					oos=new ObjectOutputStream(s.getOutputStream());
+					oos.writeObject(mess1);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}				
+				
+				this.dispose();
+			}else{
+				JOptionPane.showMessageDialog(this, "密码错误");
+			}			
 			
-					this.dispose();
-				}else{
-					JOptionPane.showMessageDialog(this, "密码错误");				
-		        }				
-	        }
-	     }
+		}
+				
+		
 	}
+
+}
