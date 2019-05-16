@@ -34,7 +34,7 @@ public class ClientConnetion {
 			oos.writeObject(user);			
 			
 			ObjectInputStream ois=new ObjectInputStream(s.getInputStream());
-			mess=(Message)ois.readObject();//接收
+			mess=(Message)ois.readObject();//接收到登录是否成功的mess
 			
 			//登录成功保存Socket对象到hmSocket中
 			if(mess.getMessageType().equals(Message.message_LoginSuccess)){

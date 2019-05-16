@@ -42,7 +42,8 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 	JButton blackListButton1;
 	
 	String userName;//成员变量
-	public FriendList(String userName){//形参
+	//public FriendList(String userName){//形参
+	public FriendList(String userName,String friendString){//形参
 		this.userName=userName;
 		//创建第一张卡片
 		myFriendPanel = new JPanel(new BorderLayout());//布局的问题,边界布局
@@ -53,10 +54,15 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		myFriendPanel.add(myFriendButton,"North");
 		
 		//中部
-		myFriendListJPanel=new JPanel(new GridLayout(MYFRIENDCOUNT-1,1));//网格布局
-		for(int i=1;i<MYFRIENDCOUNT;i++){
-			myFriendJLabel[i]=new JLabel(i+"",new ImageIcon("images/duck.gif"),JLabel.LEFT);
-			myFriendJLabel[i].setEnabled(false);
+		//从数据库relation中读取好友信息来更新好友列表
+		//1，服务器读取好友数据出来2,利用服务器发送来的好友名字（friendString）更新好友列表
+		String[] friendName=friendString.split(" ");
+		int count=friendName.length;
+		
+		myFriendListJPanel=new JPanel(new GridLayout(count,1));//网格布局
+		for(int i=1;i<count;i++){
+			myFriendJLabel[i]=new JLabel(friendName[i]+"",new ImageIcon("images/duck.gif"),JLabel.LEFT);
+			//myFriendJLabel[i].setEnabled(false);
 			//激活自己的图标
 			//if(Integer.parseInt(userName)==i) myFriendJLabel[i].setEnabled(true);			
 			myFriendJLabel[i].addMouseListener(this);

@@ -89,7 +89,9 @@ public class ClientLogin extends JFrame implements ActionListener{//类名：Client
 			//密码验证，密码是123456验证成功，否则验证失败
 			Message mess=new ClientConnetion().loginValidate(user);
 			if(mess.getMessageType().equals(Message.message_LoginSuccess)){
-				FriendList friendList=new FriendList(userName);//创建好友列表对象之后
+				
+				String friendString=mess.getContent();
+				FriendList friendList=new FriendList(userName,friendString);//创建好友列表对象之后
 				//保存friendList
 				hmFriendList.put(userName, friendList);
 				
