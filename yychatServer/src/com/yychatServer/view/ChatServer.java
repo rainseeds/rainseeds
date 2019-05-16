@@ -43,8 +43,6 @@ public class ChatServer extends JFrame implements ActionListener{//实现接口
 		StartServer myServer;
 		if(arg0.getSource()==jb1) myServer=new StartServer();//监听端口，建立和客户端的连接
 		if(arg0.getSource()==jb2) System.exit(0);//退出程序
-		
-		
 	}
 
 }
