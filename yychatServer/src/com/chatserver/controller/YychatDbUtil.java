@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 public class YychatDbUtil {
 	//静态成员（字符串类型的符号常量）
@@ -34,9 +35,55 @@ public class YychatDbUtil {
 				}
     			return conn;
     }
-
+    
+    //添加新用户的方法
+    public static void addUser(String userName,String passWord){
+    	boolean loginSuccess=false;
+    	Connection conn=getConnection();
+		String user_Add_Sql="insert into user(userName,password,registertimestamp) values()";
+		PreparedStatement ptmt=null;
+		try{
+		ptmt=conn.prepareStatement(user_Add_Sql);
+		ptmt.setString(1, userName);
+		ptmt.setString(2, passWord);
+		//java.util.Date date=new java.util.Date();//类的完全限定名
+		Date date=new Date();
+		java.sql.Timestamp timestamp=new java.sql.Timestamp(date.getTime());
+		ptmt.setTimestamp(3, timestamp);
+		//4、执行preparedStatement
+		int count=ptmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			closeDB (conn,ptmt);
+		}
+    }
+    
+    //在user表中查找userName 用户
+    public static boolean seekUser(String userName){
+    	boolean seekSuccess=false;
+    	Connection conn=getConnection();
+		String user_Seek_Sql="select * from user where username=? and password=?";
+		PreparedStatement ptmt=null;
+		ResultSet rs=null;
+		try{
+			ptmt=conn.prepareStatement(user_Seek_Sql);
+			ptmt.setString(1, userName);
+			//4、执行preparedStatement
+			rs=ptmt.executeQuery();
+			//5、根据结果集来判断是否能登录
+			seekSuccess=rs.next();	
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}finally{
+				closeDB (conn,ptmt,rs);
+			}
+			return seekSuccess;
+	    }
+    
 		//3、建立一个preparedStatement,标准的SQL语言
         public static boolean loginValidate(String userName,String passWord){
+        	System.out.println(userName+passWord);
     	boolean loginSuccess=false;
     	Connection conn=getConnection();
 		String user_Login_Sql="select * from user where username=? and password=?";
@@ -50,6 +97,7 @@ public class YychatDbUtil {
 		rs=ptmt.executeQuery();
 		//5、根据结果集来判断是否能登录
 		loginSuccess=rs.next();	
+		
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally{
@@ -80,6 +128,22 @@ public static String getFriendString(String userName){
 	return friendString;
 }
 
+public static void closeDB (Connection conn,PreparedStatement ptmt){
+    if (conn!=null){
+      try {
+	     conn.close();
+      } catch (SQLException e) {
+	        e.printStackTrace();
+      }
+ }
+    if (ptmt!=null){
+     try {
+         ptmt.close();
+     } catch (SQLException e) {
+           e.printStackTrace();
+     }
+ }
+}
 public static void closeDB (Connection conn,PreparedStatement ptmt,ResultSet rs){
 	         if (conn!=null){
 		       try {

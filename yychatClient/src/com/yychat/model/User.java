@@ -5,7 +5,15 @@ import java.io.Serializable;
 public class User implements Serializable{
 	private String userName;//成员变量
 	private String passWord;
+	private String userMessageType;
+	//注册新用户步骤3："USER-REGISTER"和"USER-LOGIN"
 	
+	public String getuserMessageType() {
+		return userName;
+	}
+	public void setuserMessageType(String userMessageType) {
+		this.userName = userMessageType;
+	}
 	public String getUserName() {
 		return userName;
 	}

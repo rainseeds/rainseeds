@@ -20,11 +20,12 @@ import com.yychat.model.User;
 public class StartServer {
 	ServerSocket ss;
 	Socket s;
+	String passWord;
 	Message mess;
+	String userName;
 	
 	public static HashMap hmSocket=new HashMap<String,Socket>();//泛型，通用类
-	String userName;
-	String passWord;
+	
 	public StartServer(){
 		try {
 			ss=new ServerSocket(3456);//服务器端口监听3456
@@ -40,16 +41,38 @@ public class StartServer {
 				this.passWord=user.getPassWord();
 				System.out.println(user.getUserName());
 				System.out.println(user.getPassWord());
-			
-				//Server端验证密码是否“123456”
+				//注册新用户步骤7、在服务器端完成新用户的注册
+				if(user.getuserMessageType().equals("USER-REGISTER")){
+					//注册新用户步骤8、对注册用户进行查询
+					//seekSuccess为true，认为存在同名用户；为false，不存在同名用户
+					boolean seekSuccess=YychatDbUtil.seekUser(userName);
+					if(seekSuccess){
+						//返回注册失败的message
+						Message mess=new Message();
+						mess.setSender("Server");
+						mess.setReceiver(userName);
+						mess.setMessageType(Message.message_RegisterFailure);
+					}else{
+						//注册新用户步骤9、如果没有同名用户，把新用户写入到user表中，并返回注册成功的message对象
+						YychatDbUtil.addUser(userName,passWord);
+						mess.setMessageType(Message.message_RegisterSuccess);	
+					}
+					sendMessage(s,mess);
+					s.close();//注册结束，应该关闭服务器端的socket对象
+				}
+
+				if(user.getuserMessageType().equals("USER-LOGIN")){
+				
+				boolean loginSuccess=YychatDbUtil.loginValidate(userName,passWord);
+				
+                //Server端验证密码是否“123456”
 				Message mess=new Message();
 				mess.setSender("Server");
 				mess.setReceiver(user.getUserName());
-				if(user.getPassWord().equals("123456")){//不能用"==",对象比较
-				//if(loginSuccess){
+				//if(user.getPassWord().equals("123456")){//不能用"==",对象比较
+				if(loginSuccess){//不能用"==",对象比较
 					//消息传递，创建一个Message对象				
-					mess.setMessageType(Message.message_LoginSuccess);//验证通过		
-					
+					mess.setMessageType(Message.message_LoginSuccess);//验证通过
 					String friendString=YychatDbUtil.getFriendString(userName);
 					
 					mess.setContent(friendString);//保存好友信息到mess对象的content成员
@@ -57,23 +80,24 @@ public class StartServer {
 				}
 				else{				
 					mess.setMessageType(Message.message_LoginFailure);//验证不通过	
-					System.out.println("密码验证失败");
-				}		
-				sendMessage(s,mess);
+				}				
+				ObjectOutputStream oos=new ObjectOutputStream(s.getOutputStream());
+				oos.writeObject(mess);
 				
-				if(user.getPassWord().equals("123456")){
-					//激活新上线好友的图标步骤1、向其他所有用户（比该用户先登录）发送消息
+				//if(user.getPassWord().equals("123456")){
+				if(loginSuccess){
 					mess.setMessageType(Message.message_NewOnlineFriend);
 					mess.setSender("Server");
-					mess.setContent(this.userName);//激活图标的用户名
+					mess.setContent(this.userName);
 					Set friendSet=hmSocket.keySet();
 					Iterator it=friendSet.iterator();
 					String friendName;
 					while(it.hasNext()){
-						friendName=(String)it.next();//取出每一个好友的名字
+						friendName=(String)it.next();
 						mess.setReceiver(friendName);
 						Socket s1=(Socket)hmSocket.get(friendName);
-						sendMessage(s1,mess);
+						oos=new ObjectOutputStream(s1.getOutputStream());
+						oos.writeObject(mess);
 					}
 					//保存每一个用户对应的Socket
 					hmSocket.put(userName,s);
@@ -81,17 +105,16 @@ public class StartServer {
 					//如何接收客户端的聊天信息？另建一个线程来接收聊天信息
 					new ServerReceiverThread(s,hmSocket).start();//创建线程，并让线程就绪
 					System.out.println("启动线程成功");
-				}
-			}				
+				}	
+			 }			
+			}
 			
-		} catch (IOException | ClassNotFoundException  e) {			
+		} catch (IOException | ClassNotFoundException e) {			
 			e.printStackTrace();
 		}
-}
-	private void sendMessage(Socket s, Message mess) throws IOException{
-		ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-		oos.writeObject(mess);
-		
 	}
+	public void sendMessage(Socket s,Message mess) throws IOException{
+	ObjectOutputStream oos=new ObjectOutputStream(s.getOutputStream());
+	oos.writeObject(mess);
+   }
 }
-

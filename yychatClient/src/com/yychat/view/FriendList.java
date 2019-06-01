@@ -10,7 +10,8 @@ import java.util.HashMap;
 import javax.swing.*;
 
 public class FriendList extends JFrame implements ActionListener,MouseListener{//容器,接口
-	public static HashMap hmFriendChat1=new HashMap<String,FriendChat1>();
+	
+	//public static HashMap hmFriendChat1=new HashMap<String,FriendChat1>();
 	
 	//成员变量
 	CardLayout cardLayout;
@@ -54,24 +55,20 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		myFriendPanel.add(myFriendButton,"North");
 		
 		//中部
-		//从数据库relation中读取好友信息来更新好友列表
-		//1，服务器读取好友数据出来2,利用服务器发送来的好友名字（friendString）更新好友列表
+		//从数据库relation表中读取好友信息来更新好友列表2.利用服务器发送来的好友名字（friendString）更新好友列表
 		String[] friendName=friendString.split(" ");
 		int count=friendName.length;
+		System.out.println(count);
 		
 		myFriendListJPanel=new JPanel(new GridLayout(count,1));//网格布局
-		for(int i=1;i<count;i++){
+		for(int i=0;i<count;i++){
 			myFriendJLabel[i]=new JLabel(friendName[i]+"",new ImageIcon("images/duck.gif"),JLabel.LEFT);
 			//myFriendJLabel[i].setEnabled(false);
-			//激活自己的图标
-			//if(Integer.parseInt(userName)==i) myFriendJLabel[i].setEnabled(true);			
+			//if(Integer.parseInt(userName)==i)	myFriendJLabel[i].setEnabled(true);	
 			myFriendJLabel[i].addMouseListener(this);
 			myFriendListJPanel.add(myFriendJLabel[i]);
 		}
-		//激活自己的图标
-		//myFriendJLabel[Integer.parseInt(userName)].setEnabled(true);
-		/*myFriendListJScrollPane=new JScrollPane();
-		myFriendListJScrollPane.add(myFriendListJPanel);*/
+		    
 		myFriendListJScrollPane=new JScrollPane(myFriendListJPanel);
 		myFriendPanel.add(myFriendListJScrollPane);
 		
@@ -98,6 +95,8 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		
 		//中部
 		
+		
+		
 		//南部
 		blackListButton1=new JButton("黑名单");
 		myStrangerPanel.add(blackListButton1,"South");
@@ -119,19 +118,7 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 	public static void main(String[] args) {
 		//FriendList friendList=new FriendList("pdh");
 	}
-	public void setEnabledNewOnlineFriend(String newOnlineFriend){
-		myFriendJLabel[Integer.parseInt(newOnlineFriend)].setEnabled(true);
-	}
 
-	public void setEnabledOnlineFriend(String onlineFriend){
-		//激活在线好友图标
-		String[] friendName=onlineFriend.split(" ");
-		int count=friendName.length;
-		for(int i=0;i<count;i++){			
-			myFriendJLabel[Integer.parseInt(friendName[i])].setEnabled(true);
-		}		
-	}
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {//响应事件的方法
 		if(e.getSource()==myStrangerButton) cardLayout.show(this.getContentPane(), "2");
@@ -143,20 +130,8 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		if(arg0.getClickCount()==2){
 			JLabel jlbl=(JLabel)arg0.getSource();
 			String receiver=jlbl.getText();
-			//new FriendChat(this.userName,receiver);
-			//new Thread(new FriendChat(this.userName,receiver)).start();
-			
-			//怎么解决好友聊天界面不重复创建的问题？
-			//思路：要在hmFriendChat1里面查找有没有该对象，有的话不创建，没有才新建。
-			FriendChat1 friendChat1=(FriendChat1)hmFriendChat1.get(userName+"to"+receiver);
-			if(friendChat1==null){
-				friendChat1=new FriendChat1(this.userName,receiver);//对象名friendChat1可以引用我们创建的对象
-				hmFriendChat1.put(userName+"to"+receiver, friendChat1);
-			}else{
-				friendChat1.setVisible(true);
-				System.out.println("test!");
-			}			
-		}		
+		}
+		
 	}
 
 	@Override
@@ -184,4 +159,17 @@ public class FriendList extends JFrame implements ActionListener,MouseListener{/
 		// TODO Auto-generated method stub
 		
 	}
-}
+
+	public void setEnabledOnlineFriend(String OnlineFriend) {
+		//激活在线好友图标
+		String[] friendName=OnlineFriend.split(" ");
+		int count=friendName.length;
+		for(int i=0;i<count;i++){
+			//myFriendJLabel[Integer.parseInt(friendName[i])].setEnabled(true);
+		}
+	}
+        //新加
+	public void setEnabledOnlineFriend1(String content) {
+		// TODO Auto-generated method stub
+	}
+	}
